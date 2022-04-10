@@ -26,50 +26,152 @@ variables (P Q R S : Prop)
 
 example : P ↔ P :=
 begin
-  sorry
+  refl,
 end
 
 example : (P ↔ Q) → (Q ↔ P) :=
 begin
-  sorry
+  intro hPQ,
+  split,
+  {
+    intro hQ,
+    rw hPQ,
+    assumption,
+  },
+  {
+    rw hPQ,
+    intro hP,
+    assumption,
+  },
 end
 
 example : (P ↔ Q) ↔ (Q ↔ P) :=
 begin
-  sorry
+  split,
+  {
+    intro hPQ,
+    rw hPQ,
+  },
+  {
+    intro hQP,
+    rw hQP,
+  }
 end
 
 example : (P ↔ Q) → (Q ↔ R) → (P ↔ R) :=
 begin
-  sorry
+  intros h1 h2,
+  rw h1,
+  exact h2,
 end
 
 example : P ∧ Q ↔ Q ∧ P :=
 begin
-  sorry
+  split;
+  { rintro ⟨h1, h2⟩,
+    exact ⟨h2, h1⟩,}
 end
 
 example : ((P ∧ Q) ∧ R) ↔ (P ∧ (Q ∧ R)) :=
 begin
-  sorry
+  split,
+  {
+    rintros ⟨⟨h11, h22⟩, h2⟩,
+    split,
+    {
+      assumption,
+    },
+    {
+      split;
+      assumption,
+    }
+  },
+  {
+    rintros ⟨h1, h2, h3⟩,
+    split,
+    {
+      split;
+      assumption,
+    },
+    {
+      assumption,
+    }
+  }
 end
 
 example : P ↔ (P ∧ true) :=
 begin
-  sorry
+  split,
+  intro h,
+  split,
+  {
+    assumption,
+  },
+  {
+    triv,
+  },
+  {
+    rintros ⟨hP, ht⟩,
+    exact hP,
+  },
+
 end
 
 example : false ↔ (P ∧ false) :=
 begin
-  sorry
+  split,
+  {
+    intro hf,
+    split,
+    {exfalso,
+    assumption},
+    {
+      assumption,
+    },
+  },{
+    rintros ⟨hP, hf⟩,
+    exact hf,
+  }
 end
 
 example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) :=
 begin
-  sorry
+  intros hPQ hRS,
+  split,
+  {
+    rintros ⟨hP, hR⟩,
+    split,
+    {
+      rw ← hPQ,
+      assumption,
+    },
+    {
+      rwa ← hRS,
+    },
+  },
+  {
+    rintro ⟨hQ, hS⟩,
+    split,
+    {
+      rwa hPQ,
+    },
+    {
+      rwa hRS,
+    },
+  }
 end
 
 example : ¬ (P ↔ ¬ P) :=
 begin
-  sorry,
+  intro h,
+  have hnP : ¬ P,
+  {
+    cases h with h1 h2,
+    intro hX,
+    apply h1,
+    assumption,
+    assumption,
+  },
+  apply hnP,
+  rwa h,
 end

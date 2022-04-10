@@ -35,55 +35,89 @@ variables (P Q R : Prop)
 
 example : ¬ true → false :=
 begin
-  sorry
+  intro h,
+  change true → false at h,
+  apply h,
+  triv,
 end
 
 example : false → ¬ true :=
 begin
-  sorry
+  intro h,
+  change true → false,
+  intro h2,
+  exact h,
 end
 
 example : ¬ false → true :=
 begin
-  sorry
+  intro h,
+  triv,
 end
 
 example : true → ¬ false :=
 begin
-  sorry
+  intro h,
+  by_contra,
+  exact h,
 end
 
 example : false → ¬ P :=
 begin
-  sorry
+  intro h,
+  by_contra h2,
+  exact h,
 end
 
 example : P → ¬ P → false :=
 begin
-  sorry
+  intros hP nPf,
+  apply nPf,
+  exact hP,
 end
 
 example : P → ¬ (¬ P) :=
 begin
-  sorry
+  intro hP,
+  by_contra,
+  apply h,
+  exact hP,
 end
 
 example : (P → Q) → (¬ Q → ¬ P) :=
 begin
-  sorry
+  intros hPQ hnQ,
+  by_contra,
+  apply hnQ,
+  apply hPQ,
+  exact h,
 end
 
 example : ¬ ¬ false → false :=
 begin
-  sorry
+  intro h,
+  apply h,
+  by_contra,
+  exact h,
 end
 
 example : ¬ ¬ P → P :=
 begin
-  sorry
+  intro h,
+  by_contra h2,
+  apply h,
+  exact h2,
 end
 
 example : (¬ Q → ¬ P) → (P → Q) :=
 begin
-  sorry,
+  intros hQP hP,
+  by_contra h2,
+  apply hQP,
+  {
+    exact h2,
+  },
+  {
+    exact hP,
+  }
 end
