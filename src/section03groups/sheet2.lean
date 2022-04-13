@@ -52,15 +52,36 @@ and then
 first.
 
 -/
+lemma mul_left_cancel : a * b = a * c → b = c :=
+begin
+  intro h,
+  rw ← one_mul b,
+  rw ← one_mul c,
+  rw ← inv_mul_self a,
+  rw mul_assoc,
+  rw mul_assoc,
+  rw h,
+end
+
+lemma mul_eq_of_eq_inv_mul (h : b = a⁻¹ * c) : a * b = c :=
+begin
+  apply mul_left_cancel a⁻¹,
+  rw ← mul_assoc,
+  rw inv_mul_self,
+  rw one_mul,
+  exact h,
+end 
 
 lemma mul_one (a : G) : a * 1 = a :=
 begin
-  sorry,
+  apply mul_eq_of_eq_inv_mul,
+  rw inv_mul_self,
 end
 
 lemma mul_inv_self (a : G) : a * a⁻¹ = 1 :=
 begin
-  sorry,
+  apply mul_eq_of_eq_inv_mul,
+  rw mul_one,
 end
 
 def to_mygroup (G : Type) [myweakgroup G] : mygroup G :=

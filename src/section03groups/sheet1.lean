@@ -105,17 +105,21 @@ end
 
 @[simp] lemma one_inv : (1 : G)⁻¹ = 1 :=
 begin
-  sorry,
+  rw ← mul_eq_one_iff_eq_inv,
+  rw mul_one,
 end
 
 @[simp] lemma inv_inv : (a⁻¹)⁻¹ = a :=
 begin
-  sorry,
+  rw ← mul_eq_one_iff_eq_inv,
+  rw inv_mul_self,
 end
 
 @[simp] lemma mul_inv_rev : (a * b)⁻¹ = b⁻¹ * a⁻¹ := 
 begin
-  sorry,
+  rw ← mul_eq_one_iff_eq_inv,
+  rw ← mul_assoc,
+  simp,
 end
 
 /-
@@ -128,6 +132,15 @@ we tagged with `@[simp]` are all you need. We've made a Noetherian
 confluent rewrite system for group theory!
 
 -/
+lemma mul_cancel : a * b = a * c → b = c := 
+begin
+  intro h,
+  rw [←inv_mul_cancel_left a b, ←inv_mul_cancel_left a c],
+  rw h,
+end
+
+
+
 -- example of Knuth-Bendix theorem
 example (G : Type) [mygroup G] (a b : G) : 
   (b⁻¹ * a⁻¹)⁻¹ * 1⁻¹⁻¹ * b⁻¹ * (a⁻¹ * a⁻¹⁻¹⁻¹) * a = 1 := by simp
@@ -136,7 +149,16 @@ example (G : Type) [mygroup G] (a b : G) :
 example (G : Type) [mygroup G] (h : ∀ g : G, g * g = 1) :
   ∀ g h : G, g * h = h * g :=
 begin
-  sorry
+  intros g hh,
+  apply mul_cancel (g*hh),
+  rw h (g*hh),
+  rw ← mul_assoc,
+  apply mul_cancel g,
+  rw [←mul_assoc, ←mul_assoc, ←mul_assoc],
+  rw h g,
+  rw one_mul,
+  rw h hh,
+  rw [one_mul, mul_one],
 end
 
 end mygroup
