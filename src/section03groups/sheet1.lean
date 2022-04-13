@@ -64,12 +64,13 @@ See if you can prove all seven using (for the most part) the `rw` tactic.
 
 @[simp] lemma inv_mul_cancel_left : a⁻¹ * (a * b) = b :=
 begin
-  sorry
+  simp [←mul_assoc],
 end
 
 @[simp] lemma mul_inv_cancel_left : a * (a⁻¹ * b) = b :=
 begin
-  sorry
+  rw ← mul_assoc,
+  simp,
 end
 
 lemma left_inv_eq_right_inv {a b c : G} (h1 : b * a = 1) (h2 : a * c = 1) : 
@@ -77,12 +78,29 @@ lemma left_inv_eq_right_inv {a b c : G} (h1 : b * a = 1) (h2 : a * c = 1) :
 begin
   -- hint for this one : establish the auxiliary fact
   -- that `b * (a * c) = (b * a) * c` with the `have` tactic.
-  sorry,
+  have h3: b * (a * c) = (b * a) * c,
+  {
+    rw ← mul_assoc,
+  },
+  rw [h2, h1] at h3,
+  simp at h3,
+  exact h3,
 end
 
 lemma mul_eq_one_iff_eq_inv : a * b = 1 ↔ a⁻¹ = b :=
 begin
-  sorry,
+  split,
+  {
+    intro h,
+    rw ← inv_mul_cancel_left a b,
+    rw h,
+    rw mul_one,
+  },
+  {
+    intro hab,
+    rw ← hab,
+    rw mul_inv_self,
+  }
 end
 
 @[simp] lemma one_inv : (1 : G)⁻¹ = 1 :=

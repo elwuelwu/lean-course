@@ -84,13 +84,23 @@ but it can't do anything with it if it's a variable.
 /-- The limit of the constant sequence with value 37 is 37. -/
 theorem tendsto_thirtyseven : tendsto (λ n, 37) 37 :=
 begin
-  sorry,
+  rw tendsto_def,
+  intros ε hε ,
+  use 5,
+  intros n hn,
+  norm_num,
+  exact hε,
 end
 
 /-- The limit of the constant sequence with value `c` is `c`. -/
 theorem tendsto_const (c : ℝ) : tendsto (λ n, c) c :=
 begin
-  sorry,
+  rw tendsto_def,
+  intros ε hε,
+  use 764,
+  intros n hn,
+  simp,
+  assumption,
 end
 
 /-- If `a(n)` tends to `t` then `a(n) + c` tends to `t + c` -/
@@ -98,13 +108,20 @@ theorem tendsto_add_const {a : ℕ → ℝ} {t : ℝ} (c : ℝ)
   (h : tendsto a t) :
   tendsto (λ n, a n + c) (t + c) :=
 begin
-  sorry,
   -- hints: make sure you know the maths proof!
   -- use `cases` to deconstruct an `exists`
   -- hypothesis, and `specialize` to specialize
   -- a `forall` hypothesis to specific values.
   -- Look up the explanations of these tactics in Part C
   -- of the course notes. 
+  rw tendsto_def at h ⊢,
+  intros ε hε,
+  specialize h ε hε,
+  cases h with B,
+  use B,
+  intros n hn,
+  specialize h_h n hn,
+  simpa,
 end
 
 
@@ -112,11 +129,20 @@ end
 example {a : ℕ → ℝ} {t : ℝ} (ha : tendsto a t) :
   tendsto (λ n, - a n) (-t) :=
 begin
-  sorry,
   -- Try this one. Where do you get stuck?
   -- The problem is that you probably don't
   -- know any API for the absolute value function |.|.
   -- We need to figure out how to prove |(-x)| = |x|,
   -- or |a - b| = |b - a| or something like that.
   -- Find out how in sheet 4.
+  rw tendsto_def at ha ⊢,
+  intros ε hε,
+  specialize ha ε hε,
+  cases ha with B,
+  use B,
+  intros n hn,
+  specialize ha_h n hn,
+  simp,
+  rw abs_sub_comm t (a n),
+  exact ha_h,
 end
