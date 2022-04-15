@@ -134,7 +134,17 @@ we can make it a `simp` lemma.
 
 @[simp] theorem inv_mem_iff {x : G} : x⁻¹ ∈ H ↔ x ∈ H := 
 begin
-  sorry
+  split,
+  {
+    intro hx,
+    have foo := H.inv_mem hx,
+    rwa inv_inv at foo,
+  },
+  {
+    intro hx,
+    apply H.inv_mem,
+    assumption,
+  }
 end
 
 -- We could prove a bunch more theorems here. Let's just do two more.
@@ -142,13 +152,38 @@ end
 theorem mul_mem_cancel_left {x y : G} (hx : x ∈ H) :
   x * y ∈ H ↔ y ∈ H :=
 begin
-  sorry
+  split,
+  {
+    intro hxy,
+    have poo := H.inv_mem hx,
+    have jee := H.mul_mem poo hxy,
+    rw ← mul_assoc at jee,
+    simp at jee,
+    exact jee,
+  },
+  {
+    intro hy,
+    apply H.mul_mem;
+    assumption,
+  }
 end
 
 theorem mul_mem_cancel_right {x y : G} (hx : x ∈ H) :
   y * x ∈ H ↔ y ∈ H :=
 begin
-  sorry
+  split,
+  {
+    intro hyx,
+    have xinv := H.inv_mem hx,
+    have foo := H.mul_mem hyx xinv,
+    simp at foo,
+    exact foo,
+  },
+  {
+    intro hy,
+    apply mul_mem;
+    assumption,
+  }
 end
 
 /-- The predicate saying that G is abelian. -/
@@ -161,9 +196,47 @@ def is_abelian (G : Type) [group G] : Prop :=
 /-- `conjugate H g` is the subgroup conjugate `gHg⁻¹` of `H`. -/
 def conjugate (H : mysubgroup G) (g : G) : mysubgroup G :=
 { carrier := { a : G | ∃ h ∈ H, a = g * h * g⁻¹ },
-  one_mem' := begin sorry end,
-  mul_mem' := begin sorry end,
-  inv_mem' := begin sorry end,
+  one_mem' := begin 
+    --dsimp,
+    use 1,
+    simp,
+    exact H.one_mem,
+  end,
+  mul_mem' := begin 
+    intros x y,
+    dsimp,
+    intros hx hy,
+    cases hx with h_x,
+    cases hx_h with h2x,
+    cases hy with h_y,
+    cases hy_h with h2y,
+    use (h_x * h_y),
+    split,
+    {
+      exact H.mul_mem h2x h2y,
+    },
+    {
+      rw [hx_h_h, hy_h_h, ←mul_assoc, ←mul_assoc, ←mul_assoc],
+      simp,
+    }
+  end,
+  inv_mem' := begin
+    dsimp,
+    intros x hx,
+    cases hx with h,
+    cases hx_h with hh,
+    have hinv := H.inv_mem hh,
+    use h⁻¹,
+    split,
+    {
+      exact hinv,
+    },
+    {
+      rw hx_h_h,
+      simp,
+      rw ← mul_assoc,
+    }
+  end,
 }
 
 /-- A subgroup is normal iff it's equal to all its conjugates. -/
@@ -172,7 +245,28 @@ def is_normal {G : Type} [group G] (H : mysubgroup G) : Prop :=
 
 example (h_ab : is_abelian G) (H : mysubgroup G) : is_normal H :=
 begin
-  sorry,
+  intro g,
+  ext x,
+  split,
+  {
+    rintros ⟨h, hy⟩,
+    cases hy with hh,
+    rw h_ab at hy_h,
+    rw ← mul_assoc at hy_h,
+    rw hy_h,
+    simpa,
+  },
+  {
+    intro h,
+    use g⁻¹ * x * g,
+    split, {
+      rw h_ab,
+      rw ← mul_assoc,
+      simpa,
+    }, {
+      group,
+    },
+  }
 end
 
 end mysubgroup
